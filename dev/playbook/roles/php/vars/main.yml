@@ -1,0 +1,38 @@
+---
+php_5_6:
+  # php 提供元レポジトリURL
+  repo_url: http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+  # 利用レポジトリ
+  enablerepo: remi-php56
+  # インストール対象パッケージ
+  install_packages:
+    - php
+    - php-cli
+    - php-common
+    - php-dbg
+    - php-devel
+    - php-gd
+    - php-mbstring
+    - php-mcrypt
+    - php-mysqlnd
+    - php-opcache
+    - php-xml
+    - php-pdo # Redshift接続要件
+    - php-odbc # Redshift接続要件
+  # php 設定ファイル
+  config_path: /etc/php.ini
+  # php 設定ファイル変更箇所
+  config_changes:
+    - regexp: '^;(date.timezone) =.*'
+      line: '\1 = Asia/Tokyo'
+    - regexp: '^;(mbstring.language) =.*'
+      line: '\1 = Japanese'
+    - regexp: '^;(mbstring.internal_encoding) =.*'
+      line: '\1 = UTF-8'
+    - regexp: '^;(mbstring.http_input) =.*'
+      line: '\1 = pass'
+    - regexp: '^;(mbstring.http_output) =.*'
+      line: '\1 = pass'
+    - regexp: '^;(mbstring.encoding_translation) =.*'
+      line: '\1 = off'
+

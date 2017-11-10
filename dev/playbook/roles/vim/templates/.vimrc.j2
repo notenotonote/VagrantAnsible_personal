@@ -1,0 +1,360 @@
+""" release autogroup in MyAutoCmd
+augroup MyAutoCmd
+    autocmd!
+augroup END
+
+""" 検索関係
+set ignorecase          " 大文字小文字を区別しない
+set smartcase           " 検索文字に大文字がある場合は大文字小文字を区別
+set incsearch           " インクリメンタルサーチ
+set hlsearch            " 検索マッチテキストをハイライト
+" バックスラッシュやクエスチョンを状況に合わせ自動的にエスケープ
+cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
+cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
+
+""" 編集関係
+set infercase           " 補完時に大文字小文字を区別しない
+set virtualedit=all     " カーソルを文字が存在しない部分でも動けるようにする
+set hidden              " バッファを閉じる代わりに隠す（Undo履歴を残すため）
+set switchbuf=useopen   " 新しく開く代わりにすでに開いてあるバッファを開く
+set showmatch           " 対応する括弧などをハイライト表示する
+set matchtime=3         " 対応括弧のハイライト表示を3秒にする
+set autoindent          " 改行時にインデントを引き継いで改行する
+set shiftwidth=4        " インデントにつかわれる空白の数
+au BufNewFile,BufRead *.yml set shiftwidth=2
+set softtabstop=4       " <Tab>押下時の空白数
+set expandtab           " <Tab>押下時に<Tab>ではなく、ホワイトスペースを挿入する
+set tabstop=4           " <Tab>が対応する空白の数
+au BufNewFile,BufRead *.yml set tabstop=2
+set shiftround          " '<'や'>'でインデントする際に'shiftwidth'の倍数に丸める
+set nf=hex              " インクリメント、デクリメントを16進数にする
+"set mouse=a             " マウス使えます
+" 対応括弧に'<'と'>'のペアを追加
+set matchpairs& matchpairs+=<:>
+" バックスペースでなんでも消せるようにする
+set backspace=indent,eol,start
+" クリップボードをデフォルトのレジスタとして指定。後にYankRingを使うので
+" 'unnamedplus'が存在しているかどうかで設定を分ける必要がある
+if has('unnamedplus')
+    set clipboard& clipboard+=unnamedplus,unnamed
+else
+    set clipboard& clipboard+=unnamed
+endif
+" Swapファイル, Backupファイルを全て無効化する
+set nowritebackup
+set nobackup
+set noswapfile
+
+""" 表示関係
+set t_Co=256
+set background=dark
+colorscheme hybrid
+syntax on
+set list                " 不可視文字の可視化
+set number              " 行番号の表示
+set ruler               " カーソル位置が右下に表示される
+set wildmenu            " コマンドライン補完が強力になる
+set showcmd             " コマンドを画面の最下部に表示する
+set wrap                " 長いテキストの折り返し
+set textwidth=0         " 自動的に改行が入るのを無効化
+set colorcolumn=80      " その代わり80文字目にラインを入れる
+set cursorline      " その代わり80文字目にラインを入れる
+" 前時代的スクリーンベルを無効化
+set t_vb=
+set novisualbell
+set foldmethod=indent    " 折り畳み
+set foldlevel=100    " ファイルを開くときに折り畳みをしない
+
+""" マクロおよびキー設定
+" 入力モード中に素早くjjと入力した場合はESCとみなす
+inoremap jj <Esc>
+" ESCを二回押すことでハイライトを消す
+nmap <silent> <Esc><Esc> :nohlsearch<CR>
+" カーソル下の単語を * で検索
+vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
+" 検索後にジャンプした際に検索単語を画面中央に持ってくる
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
+nnoremap g* g*zz
+nnoremap g# g#zz
+" j, k による移動を折り返されたテキストでも自然に振る舞うように変更
+nnoremap j gj
+nnoremap k gk
+" vを二回で行末まで選択
+vnoremap v $h
+" TABにて対応ペアにジャンプ
+nnoremap <Tab> %
+vnoremap <Tab> %
+" インサートモードの時に C-j でノーマルモードに戻る
+inoremap <C-j> <esc>
+" [ って打ったら [] って入力されてしかも括弧の中にいる(以下同様)
+inoremap [ []<left>
+inoremap ( ()<left>
+inoremap { {}<left>
+inoremap " ""<left>
+inoremap ' ''<left>
+" Ctrl + hjkl でウィンドウ間を移動
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+" Shift + 矢印でウィンドウサイズを変更
+nnoremap <S-Left>  <C-w><<CR>
+nnoremap <S-Right> <C-w>><CR>
+nnoremap <S-Up>    <C-w>-<CR>
+nnoremap <S-Down>  <C-w>+<CR>
+" タブ間の移動
+nnoremap <C-n> gt
+nnoremap <C-p> gT
+" T + ? で各種設定をトグル
+nnoremap [toggle] <Nop>
+nmap T [toggle]
+nnoremap <silent> [toggle]s :setl spell!<CR>:setl spell?<CR>
+nnoremap <silent> [toggle]l :setl list!<CR>:setl list?<CR>
+nnoremap <silent> [toggle]t :setl expandtab!<CR>:setl expandtab?<CR>
+nnoremap <silent> [toggle]w :setl wrap!<CR>:setl wrap?<CR>
+" make, grep などのコマンド後に自動的にQuickFixを開く
+autocmd MyAutoCmd QuickfixCmdPost make,grep,grepadd,vimgrep copen
+" QuickFixおよびHelpでは q でバッファを閉じる
+autocmd MyAutoCmd FileType help,qf nnoremap <buffer> q <C-w>c
+" w!! でスーパーユーザーとして保存（sudoが使える環境限定）
+cmap w!! w !sudo tee > /dev/null %
+" :e などでファイルを開く際にフォルダが存在しない場合は自動作成
+function! s:mkdir(dir, force)
+  if !isdirectory(a:dir) && (a:force ||
+        \ input(printf('"%s" does not exist. Create? [y/N]', a:dir)) =~? '^y\%[es]$')
+    call mkdir(iconv(a:dir, &encoding, &termencoding), 'p')
+  endif
+endfunction
+autocmd MyAutoCmd BufWritePre * call s:mkdir(expand('<afile>:p:h'), v:cmdbang)
+" vim 起動時のみカレントディレクトリを開いたファイルの親ディレクトリに指定
+autocmd MyAutoCmd VimEnter * call s:ChangeCurrentDir('', '')
+function! s:ChangeCurrentDir(directory, bang)
+    if a:directory == ''
+        lcd %:p:h
+    else
+        execute 'lcd' . a:directory
+    endif
+    if a:bang == ''
+        pwd
+    endif
+endfunction
+" ~/.vimrc.localが存在する場合のみ設定を読み込む
+let s:local_vimrc = expand('~/.vimrc.local')
+if filereadable(s:local_vimrc)
+    execute 'source ' . s:local_vimrc
+endif
+
+" PATHの自動更新関数
+" | 指定された path が $PATH に存在せず、ディレクトリとして存在している場合
+" | のみ $PATH に加える
+autocmd MyAutoCmd VimEnter * call IncludePath(expand("~/.pyenv/shims"))
+function! IncludePath(path)
+  " define delimiter depends on platform
+  if has('win16') || has('win32') || has('win64')
+    let delimiter = ";"
+  else
+    let delimiter = ":"
+  endif
+  let pathlist = split($PATH, delimiter)
+  if isdirectory(a:path) && index(pathlist, a:path) == -1
+    let $PATH=a:path.delimiter.$PATH
+  endif
+endfunction
+
+""" dein
+" Required:
+set runtimepath^={{ vim.dein_vim_dest }}
+
+" Required:
+call dein#begin(expand('{{ vim.dein_vim_dest }}'))
+
+" Let dein manage dein
+" Required:
+call dein#add('Shougo/dein.vim')
+
+" Add or remove your plugins here:
+{% for plugin in vim.vim_plugins %}
+{% if plugin.revision is defined %}
+call dein#add('{{ plugin.name }}', { 'rev': '{{ plugin.revision }}' })
+{% else %}
+call dein#add('{{ plugin.name | default(plugin) }}')
+{% endif %}
+{% endfor %}
+
+" Required:
+call dein#end()
+
+" Required:
+filetype plugin indent on
+
+" If you want to install not installed plugins on startup.
+if dein#check_install()
+  call dein#install()
+endif
+
+" *******************************************************
+" neosnippet
+" *******************************************************
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+    set conceallevel=2 concealcursor=niv
+endif
+
+" *******************************************************
+" neocomplete
+" *******************************************************
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+    \ 'default' : '',
+    \ 'vimshell' : $HOME.'/.vimshell_hist',
+    \ 'scheme' : $HOME.'/.gosh_completions'
+        \ }
+
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+    let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+    return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" *******************************************************
+" neocomplete-php
+" *******************************************************
+let g:neocomplete_php_locale = 'ja'
+
+" *******************************************************
+" vim-scripts/PDV--phpDocumentor-for-Vim
+" *******************************************************
+inoremap <C-P> <Esc>:call PhpDocSingle()<CR>i
+nnoremap <C-P> :call PhpDocSingle()<CR>
+vnoremap <C-P> :call PhpDocSingle()<CR>
+
+" *******************************************************
+" NERDTree
+" *******************************************************
+" ブックマーク初期表示
+let g:NERDTreeShowBookmarks=1
+"
+let g:NERDTreeChDirMode=2
+" windowサイズ設定
+let g:NERDTreeWinSize=20
+" 表示したくないファイル、ディレクトリ
+let g:NERDTreeIgnore=['\.DS_Store$', '\.swp$', '\~$', '\.so']
+nnoremap <silent><C-e> :NERDTreeToggle<CR>
+" vim起動時に常に表示
+" autocmd vimenter * NERDTree
+" NERDTreeだけが残る場合はvim終了
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" *******************************************************
+" syntastic
+" *******************************************************
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+let g:syntastic_javascript_checkers=['eslint']
+let g:syntastic_scss_checkers = ['scss_lint']
+let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
+let g:syntastic_rst_checkers = ['sphinx']
+let g:syntastic_python_checkers = ['pyflakes', 'pep8']
+
+" *******************************************************
+" tagbar
+" *******************************************************
+" windowサイズ
+" let g:tagbar_width=20
+" 起動時に常に表示
+" autocmd vimenter *.php TagbarOpen
+
+" *******************************************************
+" vim-tags
+" *******************************************************
+" let g:vim_tags_project_tags_command = "/usr/local/Cellar/ctags/5.8_1/bin/ctags -f .tags -R . 2>/dev/null"
+let g:vim_tags_project_tags_command = "/usr/bin/ctags -f .tags -R . 2>/dev/null"
+let g:vim_tags_auto_generate = 1
+
+" *******************************************************
+" ctags
+" *******************************************************
+" phpファイル用tags
+au BufNewFile,BufRead *.php set tags+=$HOME/.tags/php.tags
+" *******************************************************
+" vim-template
+" *******************************************************
+autocmd MyAutoCmd User plugin-template-loaded call s:template_keywords()
+function! s:template_keywords()
+    silent! %s/<+DATE+>/\=strftime('%Y-%m-%d')/g
+    silent! %s/<+FILENAME+>/\=expand('%:r')/g
+endfunction
+" テンプレート中に含まれる'<+CURSOR+>'にカーソルを移動
+autocmd MyAutoCmd User plugin-template-loaded
+    \   if search('<+CURSOR+>')
+    \ |   silent! execute 'normal! "_da>'
+    \ | endif
+" *******************************************************
+" vim-indent-guides
+" *******************************************************
+" 美しくないのでコメントアウト
+let g:indent_guides_auto_colors = 0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=black
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=black
+let g:indent_guides_enable_on_vim_startup = 1
+" *******************************************************
+" jedi
+" *******************************************************
+let g:jedi#popup_on_dot = 0
+let g:jedi#popup_select_first = 0
+let g:jedi#completions_command = "<S-Tab>"
+autocmd FileType python setlocal completeopt-=preview

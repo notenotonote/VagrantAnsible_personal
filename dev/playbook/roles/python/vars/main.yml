@@ -1,0 +1,57 @@
+---
+python_3_6:
+  python_ver: 3.6.2
+  yum_packages:
+    - gcc
+    - gcc-c++
+    - make
+    - git
+    - openssl-devel
+    - zlib-devel
+    - bzip2
+    - bzip2-devel
+    - readline-devel
+    - sqlite
+    - sqlite-devel
+    - unixODBC-devel
+    - graphviz-devel
+    - tk-devel
+  git:
+    - repo: https://github.com/yyuu/pyenv.git
+      dest: ~/.pyenv
+  pip_packages:
+    - pyodbc
+    - numpy
+    - pandas
+    - pytz
+    - jupyter
+    - sklearn
+    - scipy
+    - matplotlib
+    - jedi # vim
+    - jupyterthemes # jupyter
+    - jupyter_contrib_nbextensions # jupyter
+    - autopep8 # jupyter
+    - graphviz # jupyter
+    - ipython-sql
+    - psycopg2 # posgresql
+    - Sphinx
+    - pep8 # syntastic
+    - pyflakes # syntastic
+    - sphinx_rtd_theme # sphinx
+    - sphinx-autobuild # sphinx
+redshift:
+  driver_url: https://s3.amazonaws.com/redshift-downloads/drivers/AmazonRedshiftODBC-64bit-1.3.7.1000-1.x86_64.rpm
+jupyter:
+  extensions:
+    - help_panel/help_panel
+    - dragdrop/main
+    - toc2/main
+    - nbextensions_configurator/tree_tab/main
+    - snippets_menu/main
+    - code_prettify/autopep8
+    - contrib_nbextensions_help_item/main
+    - nbextensions_configurator/config_menu/main
+    - spellchecker/main
+    - execute_time/ExecuteTime
+    - navigation-hotkeys/main

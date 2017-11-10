@@ -1,0 +1,62 @@
+---
+##### php #####
+- name: remi レポジトリのインストール
+  yum:
+    name: "{{ php_5_6.repo_url }}"
+    state: present
+  become: yes
+  tags: php
+
+- name: php のインストール
+  yum:
+    name: "{{ php_5_6.install_packages }}"
+    enablerepo: "{{ php_5_6.enablerepo }}"
+    state: present
+  become: yes
+  tags: php
+
+- name: php 設定ファイル編集
+  lineinfile:
+    dest: "{{ php_5_6.config_path }}"
+    backrefs: yes
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  with_items: "{{ php_5_6.config_changes }}"
+  become: yes
+  tags: php
+
+- name: php用 sample ファイル配置
+  shell: "echo '<?php phpinfo() ?>' > /var/www/html/info.php"
+  args:
+    creates: "/var/www/html/info.php"
+  become: yes
+  tags: php
+
+- name: check composer
+  stat: path=/usr/local/bin/composer
+  register: composer_bin
+  become: yes
+  tags: composer
+
+- block:
+  - name: download composer
+    get_url:
+      url: https://getcomposer.org/installer
+      dest: /tmp/installer
+
+  - name: install composer
+    shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin
+
+  - name: rename composer.phar to composer
+    shell: mv /usr/local/bin/composer.phar /usr/local/bin/composer
+
+  - name: make composer executable
+    file:
+      path: /usr/local/bin/composer
+      mode: a+x
+      state: file
+
+  when: not composer_bin.stat.exists
+  become: yes
+  tags: composer
+##### php #####

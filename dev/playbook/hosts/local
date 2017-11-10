@@ -1,0 +1,8 @@
+[dev]
+192.168.33.110
+
+[local:children]
+dev
+
+[local:vars]
+ansible_connection=local

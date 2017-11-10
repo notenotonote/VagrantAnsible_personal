@@ -1,0 +1,5 @@
+--append=yes
+--recurse=yes
+--html-kinds=af
+--php-kinds=cfd
+--sh-kinds=f

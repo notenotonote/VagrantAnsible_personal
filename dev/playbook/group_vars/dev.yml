@@ -1,0 +1,17 @@
+---
+yum_packages:
+  - wget
+  - git
+  - unzip
+  - samba-client
+  - samba-winbind
+  - cifs-utils
+  - psmisc
+
+message: "Daiki Ansible!"
+
+ansible:
+  config_path: '/etc/ansible/ansible.cfg'
+  config_changes:
+    - regexp: '^#retry_files_enabled = False'
+      line: 'retry_files_enabled = False'

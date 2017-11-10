@@ -1,0 +1,144 @@
+---
+##### ansible.cfg #####
+- name: ansible 設定ファイル編集
+  lineinfile:
+    dest: "{{ ansible.config_path }}"
+    backrefs: yes
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  with_items: "{{ ansible.config_changes }}"
+  become: yes
+  tags: ansible
+##### ansible.cfg #####
+##### yum #####
+- name: yum install
+  become: yes
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ yum_packages }}"  
+  tags: yum
+##### yum #####
+
+##### git #####
+- name: make git directory
+  file:
+    path: ~/git
+    state:  directory
+    owner:  vagrant
+    group:  vagrant
+    mode: 0775
+  tags: git
+
+- name: make github directory
+  file:
+    path: ~/git/github
+    state:  directory
+    owner:  vagrant
+    group:  vagrant
+    mode: 0775
+  tags: git
+
+- name: copy git config
+  copy:
+    src:  files/git/.gitconfig
+    dest: ~/.gitconfig
+    owner:  vagrant
+    group:  vagrant
+    mode: 0644
+    force:  yes
+  tags: gitconfig
+##### git #####
+
+##### ssh #####
+- name: make .ssh
+  file:
+    path: ~/.ssh
+    state:  directory
+    owner:  vagrant
+    group:  vagrant
+    mode: 0700
+  tags: ssh
+
+- name: copy ssh config
+  copy:
+    src:  files/ssh/config
+    dest: ~/.ssh/config
+    owner:  vagrant
+    group:  vagrant
+    mode: 0600
+    force:  yes
+  tags: ssh
+
+- name: copy ssh private key
+  copy:
+    src:  files/ssh/id_rsa
+    dest: ~/.ssh/id_rsa
+    owner:  vagrant
+    group:  vagrant
+    mode: 0600
+    force:  yes
+  tags: ssh
+
+- name: copy ssh public key
+  copy:
+    src:  files/ssh/id_rsa.pub
+    dest: ~/.ssh/id_rsa.pub
+    owner:  vagrant
+    group:  vagrant
+    mode: 0644
+    force:  yes
+  tags: ssh
+##### ssh #####
+
+##### ctags #####
+- name: make .tags
+  file:
+    path: ~/.tags
+    state:  directory
+    owner:  vagrant
+    group:  vagrant
+    mode: 0775
+  tags: ctags
+
+- name: copy .ctags
+  copy:
+    src:  files/ctags/.ctags
+    dest: ~/.ctags
+    owner:  vagrant
+    group:  vagrant
+    mode: 0644
+    force:  yes
+  tags: ctags
+##### ctags #####
+
+##### alias #####
+- name: alias
+  lineinfile:
+      dest: "/home/vagrant/.bashrc"
+      line: "{{ item }}"
+  with_items: "{{ alias }}"  
+  tags: alias
+##### alias #####
+
+##### fonts #####
+- name: make fonts directory
+  file:
+    path: ~/.fonts/
+    state:  directory
+    owner:  vagrant
+    group:  vagrant
+    mode: 0775
+  tags: fonts
+- name: download fonts
+  unarchive:
+    src: http://dforest.watch.impress.co.jp/library/i/ipafont/10483/IPAfont00303.zip
+    dest: ~/.fonts/
+    remote_src: yes
+  tags: fonts
+- name: install fonts
+  shell: "{{ item.cmd }}"
+  with_items:
+    - cmd: fc-cache ~/.fonts/
+  tags: fonts
+##### fonts #####

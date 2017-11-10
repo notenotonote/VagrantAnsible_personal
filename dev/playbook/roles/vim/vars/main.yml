@@ -1,0 +1,41 @@
+vim:
+  git:
+    - repo: https://github.com/vim/vim.git
+      dest: ~/git/github/vim
+    - repo: https://github.com/w0ng/vim-hybrid.git
+      dest: ~/git/github/vim-hybrid
+    - repo: https://github.com/Shougo/dein.vim.git
+      dest: ~/git/github/DeinVim
+  yum_packages:
+    - gcc
+    - gcc-c++
+    - make
+    - ncurses-devel
+    - lua-devel
+    - gtk+-devel
+    - gtk2-devel
+    - ctags
+    - subversion
+    - python-devel
+    - python34-devel
+  dein_vim_dest: ~/git/github/DeinVim
+  vim_plugins:
+    - Shougo/neosnippet.vim
+    - Shougo/neosnippet-snippets
+    - Shougo/neocomplete.vim
+    - { name: Shougo/vimshell, revision: 3787e5 }
+    - scrooloose/nerdtree
+    - scrooloose/syntastic
+    - majutsushi/tagbar
+    - szw/vim-tags
+    - violetyk/neocomplete-php.vim
+    - vim-scripts/PDV--phpDocumentor-for-Vim
+    - thinca/vim-template
+    - tpope/vim-fugitive.git
+    - tpope/vim-surround
+    - vim-scripts/Align
+    - vim-scripts/YankRing.vim
+    - nathanaelkane/vim-indent-guides
+    - davidhalter/jedi-vim 
+    - othree/yajs.vim #javascript
+    - lambdalisue/vim-pyenv

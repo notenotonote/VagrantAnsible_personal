@@ -1,0 +1,10 @@
+---
+- name: devサーバの初期設定を行います
+  hosts:  dev
+  user: vagrant
+  gather_facts: False
+  roles:
+    - common
+    - vim
+    - php
+    - python
